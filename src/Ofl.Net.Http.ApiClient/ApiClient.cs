@@ -32,7 +32,9 @@ namespace Ofl.Net.Http.ApiClient
 
         #region Helpers
 
-        private HttpClient CreateHttpClient() => _httpClientFactory.CreateClient(_httpClientName);
+        protected virtual HttpClient CreateHttpClient() => CreateHttpClient(_httpClientFactory, _httpClientName);
+
+        protected virtual HttpClient CreateHttpClient(IHttpClientFactory httpClientFactory, string httpClientName) => httpClientFactory.CreateClient(httpClientName);
 
         #endregion
 
