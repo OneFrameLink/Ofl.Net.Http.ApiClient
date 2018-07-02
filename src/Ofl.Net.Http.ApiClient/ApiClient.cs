@@ -10,10 +10,14 @@ namespace Ofl.Net.Http.ApiClient
     {
         #region Constructor
 
-        protected ApiClient(IHttpClientFactory httpClientFactory)
+        protected ApiClient(IHttpClientFactory httpClientFactory) : this(httpClientFactory, Microsoft.Extensions.Options.Options.DefaultName)
+        { }
+
+        protected ApiClient(IHttpClientFactory httpClientFactory, string httpClientName)
         {
             // Validate parameters.
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _httpClientName = string.IsNullOrWhiteSpace(httpClientName) ? throw new ArgumentNullException(nameof(httpClientName)) : httpClientName;
         }
 
         #endregion
@@ -22,18 +26,17 @@ namespace Ofl.Net.Http.ApiClient
 
         private readonly IHttpClientFactory _httpClientFactory;
 
+        private readonly string _httpClientName;
+
+        #endregion
+
+        #region Helpers
+
+        private HttpClient CreateHttpClient() => _httpClientFactory.CreateClient(_httpClientName);
+
         #endregion
 
         #region Overrides
-
-        protected virtual Task<HttpClient> CreateHttpClientAsync(CancellationToken cancellationToken) =>
-            _httpClientFactory.CreateAsync(cancellationToken);
-
-        protected virtual Task<HttpClient> CreateHttpClientAsync(HttpMessageHandler httpMessageHandler, CancellationToken cancellationToken) =>
-            _httpClientFactory.CreateAsync(httpMessageHandler, cancellationToken);
-
-        protected virtual Task<HttpClient> CreateHttpClientAsync(HttpMessageHandler httpMessageHandler, bool disposeHandler, CancellationToken cancellationToken) =>
-            _httpClientFactory.CreateAsync(httpMessageHandler, disposeHandler, cancellationToken);
 
         protected virtual ValueTask<string> FormatUrlAsync(string url, CancellationToken cancellationToken)
         {
@@ -66,8 +69,9 @@ namespace Ofl.Net.Http.ApiClient
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
             // Get the http client.
-            using (HttpClient client = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false))
-                // Get the response.
+            HttpClient client = CreateHttpClient();
+
+            // Get the response.
             using (HttpResponseMessage originalResponse = await client.GetAsync(url, cancellationToken).ConfigureAwait(false))
                 // Process the response message.
             using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))
@@ -91,8 +95,9 @@ namespace Ofl.Net.Http.ApiClient
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
             // Get the http client.
-            using (HttpClient client = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false))
-                // Get the response.
+            HttpClient client = CreateHttpClient();
+
+            // Get the response.
             using (HttpResponseMessage originalResponse = await client.DeleteAsync(url, cancellationToken).ConfigureAwait(false))
                 // Process the response message.
             using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))

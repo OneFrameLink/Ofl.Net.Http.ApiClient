@@ -10,9 +10,9 @@
     <PackageTags>http-client api-client</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Ofl.Net.Http" Version="2.0.5" />
-    <PackageReference Include="Ofl.Net.Http.Abstractions" Version="1.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
+    <PackageReference Include="Ofl.Net.Http" Version="2.0.6" />
     <PackageReference Include="Ofl.Threading.Tasks" Version="2.0.4" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
   </ItemGroup>
 </Project>
