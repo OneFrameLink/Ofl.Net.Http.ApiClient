@@ -10,31 +10,17 @@ namespace Ofl.Net.Http.ApiClient
     {
         #region Constructor
 
-        protected ApiClient(IHttpClientFactory httpClientFactory) : this(httpClientFactory, Microsoft.Extensions.Options.Options.DefaultName)
-        { }
-
-        protected ApiClient(IHttpClientFactory httpClientFactory, string httpClientName)
+        protected ApiClient(HttpClient httpClient)
         {
             // Validate parameters.
-            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            _httpClientName = string.IsNullOrWhiteSpace(httpClientName) ? throw new ArgumentNullException(nameof(httpClientName)) : httpClientName;
+            HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         #endregion
 
         #region Instance, read-only state.
 
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        private readonly string _httpClientName;
-
-        #endregion
-
-        #region Helpers
-
-        protected virtual HttpClient CreateHttpClient() => CreateHttpClient(_httpClientFactory, _httpClientName);
-
-        protected virtual HttpClient CreateHttpClient(IHttpClientFactory httpClientFactory, string httpClientName) => httpClientFactory.CreateClient(httpClientName);
+        protected HttpClient HttpClient { get; }
 
         #endregion
 
@@ -70,12 +56,10 @@ namespace Ofl.Net.Http.ApiClient
             // Format the URL.
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
-            // Get the http client.
-            HttpClient client = CreateHttpClient();
-
             // Get the response.
-            using (HttpResponseMessage originalResponse = await client.GetAsync(url, cancellationToken).ConfigureAwait(false))
-                // Process the response message.
+            using (HttpResponseMessage originalResponse = await HttpClient.GetAsync(url, cancellationToken)
+                .ConfigureAwait(false))
+            // Process the response message.
             using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))
             { }
         }
@@ -96,12 +80,10 @@ namespace Ofl.Net.Http.ApiClient
             // Format the URL.
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
-            // Get the http client.
-            HttpClient client = CreateHttpClient();
-
             // Get the response.
-            using (HttpResponseMessage originalResponse = await client.DeleteAsync(url, cancellationToken).ConfigureAwait(false))
-                // Process the response message.
+            using (HttpResponseMessage originalResponse = await HttpClient.DeleteAsync(url, cancellationToken)
+                .ConfigureAwait(false))
+            // Process the response message.
             using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))
             { }
         }
