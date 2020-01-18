@@ -57,11 +57,13 @@ namespace Ofl.Net.Http.ApiClient
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
             // Get the response.
-            using (HttpResponseMessage originalResponse = await HttpClient.GetAsync(url, cancellationToken)
-                .ConfigureAwait(false))
+            using HttpResponseMessage originalResponse = await HttpClient
+                .GetAsync(url, cancellationToken)
+                .ConfigureAwait(false);
+
             // Process the response message.
-            using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))
-            { }
+            using var _ = await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         protected abstract Task<T> GetAsync<T>(string url, CancellationToken cancellationToken);
@@ -81,11 +83,13 @@ namespace Ofl.Net.Http.ApiClient
             url = await FormatUrlAsync(url, cancellationToken).ConfigureAwait(false);
 
             // Get the response.
-            using (HttpResponseMessage originalResponse = await HttpClient.DeleteAsync(url, cancellationToken)
-                .ConfigureAwait(false))
+            using HttpResponseMessage originalResponse = await HttpClient
+                .DeleteAsync(url, cancellationToken)
+                .ConfigureAwait(false);
+
             // Process the response message.
-            using (await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken).ConfigureAwait(false))
-            { }
+            using var _ = await ProcessHttpResponseMessageAsync(originalResponse, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         protected abstract Task<TResponse> DeleteAsync<TResponse>(string url, CancellationToken cancellationToken);
