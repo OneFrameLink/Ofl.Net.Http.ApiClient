@@ -75,11 +75,22 @@ namespace Ofl.Net.Http.ApiClient
             CancellationToken cancellationToken
         );
 
-        protected abstract Task<TResponse> PostAsync<TRequest, TResponse>(string url,
-            TRequest request, CancellationToken cancellationToken);
-
         protected abstract Task PostAsync<TRequest>(string url,
             TRequest request, CancellationToken cancellationToken);
+
+        protected virtual Task<TResponse> PostAsync<TRequest, TResponse>(
+            string url,
+            TRequest request,
+            CancellationToken cancellationToken
+        ) => PostAsync<TRequest, TResponse, TResponse>(url, request, (_, r) => r, cancellationToken);
+
+        protected abstract Task<TReturn> PostAsync<TRequest, TResponse, TReturn>(
+            string url,
+            TRequest request, 
+            Func<HttpResponseMessage, TResponse, TReturn> transformer,
+            CancellationToken cancellationToken
+        );
+
 
         protected virtual async Task DeleteAsync(string url, CancellationToken cancellationToken)
         {
@@ -99,7 +110,16 @@ namespace Ofl.Net.Http.ApiClient
                 .ConfigureAwait(false);
         }
 
-        protected abstract Task<TResponse> DeleteAsync<TResponse>(string url, CancellationToken cancellationToken);
+        protected virtual Task<TResponse> DeleteAsync<TResponse>(
+            string url,
+            CancellationToken cancellationToken
+        ) => DeleteAsync<TResponse, TResponse>(url, (_, r) => r, cancellationToken);
+
+        protected abstract Task<TReturn> DeleteAsync<TResponse, TReturn>(
+            string url,
+            Func<HttpResponseMessage, TResponse, TReturn> transformer,
+            CancellationToken cancellationToken
+        );
 
         #endregion
     }
