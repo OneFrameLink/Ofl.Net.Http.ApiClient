@@ -66,7 +66,14 @@ namespace Ofl.Net.Http.ApiClient
                 .ConfigureAwait(false);
         }
 
-        protected abstract Task<T> GetAsync<T>(string url, CancellationToken cancellationToken);
+        protected virtual Task<T> GetAsync<T>(string url, CancellationToken cancellationToken)
+            => GetAsync<T, T>(url, (m, r) => r, cancellationToken);
+
+        protected abstract Task<TReturn> GetAsync<TResponse, TReturn>(
+            string url,
+            Func<HttpResponseMessage, TResponse, TReturn> transformer,
+            CancellationToken cancellationToken
+        );
 
         protected abstract Task<TResponse> PostAsync<TRequest, TResponse>(string url,
             TRequest request, CancellationToken cancellationToken);
