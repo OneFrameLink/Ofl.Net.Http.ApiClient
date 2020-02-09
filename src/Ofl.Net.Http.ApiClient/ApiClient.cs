@@ -67,7 +67,7 @@ namespace Ofl.Net.Http.ApiClient
         }
 
         protected virtual Task<T> GetAsync<T>(string url, CancellationToken cancellationToken)
-            => GetAsync<T, T>(url, (m, r) => r, cancellationToken);
+            => GetAsync<T, T>(url, (_, r) => r, cancellationToken);
 
         protected abstract Task<TReturn> GetAsync<TResponse, TReturn>(
             string url,
